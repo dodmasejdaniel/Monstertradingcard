@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="MasterTradingCardGame" />
         <module name="Monstertradingcardgame-master" />
+        <module name="Monstertradingcardgame" />
       </profile>
     </annotationProcessing>
   </component>

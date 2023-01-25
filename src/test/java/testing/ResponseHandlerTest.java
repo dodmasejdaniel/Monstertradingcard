@@ -44,7 +44,7 @@ public class ResponseHandlerTest {
         map.put("user-agent:","PostmanRuntime/7.26.8");
         map.put("content-length:","0");
         map.put("content-type:","application/json");
-        map.put("accept:","*/*");
+        map.put("accept:","/");
         map.put("host:","localhost:10001");
         map.put("authorization:","test");
         request.setHeader_values(map);
@@ -57,7 +57,6 @@ public class ResponseHandlerTest {
         try (MockedStatic<UserManager> mb = Mockito.mockStatic(UserManager.class)) {
             mb.when(UserManager::getInstance)
                     .thenReturn(userManager);
-
             request.setHttp_verb("POST");
             request.setRequested("/users");
             ResponseHandler handler = new ResponseHandler(writer);
@@ -66,8 +65,35 @@ public class ResponseHandlerTest {
             verify(writer).flush();
         }
     }
+
     @Test
-    public void loginTest() throws IOException {
+    public void loginTest() throws IOException{
+        try (MockedStatic<UserManager> mb = Mockito.mockStatic(UserManager.class)) {
+            mb.when(UserManager::getInstance)
+                    .thenReturn(userManager);
+            request.setHttp_verb("POST");
+            request.setRequested("/sessions");
+            ResponseHandler handler = new ResponseHandler(writer);
+            handler.response(request);
+            verify(userManager).loginUser(anyString(),anyString());
+            verify(writer).flush();
+        }
+    }
+    @Test
+    public void logoutTest() throws IOException{
+        try (MockedStatic<UserManager> mb = Mockito.mockStatic(UserManager.class)) {
+            mb.when(UserManager::getInstance)
+                    .thenReturn(userManager);
+            request.setHttp_verb("DELETE");
+            request.setRequested("/sessions");
+            ResponseHandler handler = new ResponseHandler(writer);
+            handler.response(request);
+            verify(userManager).logoutUser(anyString(),anyString());
+            verify(writer).flush();
+        }
+    }
+    @Test
+    public void editUserTest() throws IOException {
         // Instantiate a MockedStatic in a try-with-resources block
         try (MockedStatic<UserManager> mb = Mockito.mockStatic(UserManager.class)) {
             mb.when(UserManager::getInstance)
@@ -85,7 +111,7 @@ public class ResponseHandlerTest {
         }
     }
     @Test
-    public void loginTestFailWrongUser() throws IOException {
+    public void editUserFailWrongUser() throws IOException {
         // Instantiate a MockedStatic in a try-with-resources block
         try (MockedStatic<UserManager> mb = Mockito.mockStatic(UserManager.class)) {
             mb.when(UserManager::getInstance)
